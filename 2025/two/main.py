@@ -4,7 +4,7 @@ small = "small.txt"
 big = "large.txt"
 AOC_CONFIG = {
     "part" : 2, # 0, 1,  
-    "input": small
+    "input": big
 }
 def read_input(file):
     try:
@@ -34,20 +34,26 @@ def part_one(data: list[str]):
             ans += curr_sum
     return ans
 
-def sequence_repeated_at_least_twice(code: str) -> bool:
-    first_rep_idx = 0
-    slow, fast = 0, 1
-    for i in range(1, len(code)):
-        fast = i
-        if code[slow] == code[fast]:
-            if first_rep_idx == 0:
-                first_rep_idx = i
-            slow += 1
-            print(slow, fast, len(code) - 1, fast == (len(code) - 1))
-    if fast == (len(code) - 1) and fast - first_rep_idx == (slow + 1):
-        return True
-    return False
+def helper_two(code: str) -> bool:
+    # 14151415
+    sublength = len(code)
 
+    while sublength != 1:
+        # print(code)
+        if len(code) % sublength == 0:
+            # sublength = 4
+            nums = set()
+            for i in range(sublength):
+                # print("sublength: ", i)
+                # if code[i*sublength:(i+1)*sublength]
+                nums.add(code[i*(len(code)//sublength):(i+1)*(len(code)//sublength)])
+                # print("nums: ", nums, "i:", i, "sublength", sublength, i*(len(code)//sublength), (i+1)*(len(code)//sublength))
+            if len(nums) == 1:
+                # got a sequence repeat at least once
+                print("invalid", code, nums, len(nums))
+                return True
+        sublength -= 1
+    return False
 
 def part_two(data: list[str]):
     ans = 0
@@ -57,14 +63,12 @@ def part_two(data: list[str]):
         first = code[:sep_idx]
         last = code[sep_idx+1:]
         for i in range(int(first), int(last)+1):
-            if sequence_repeated_at_least_twice(str(i)):
-                print(count)
-                print(i)
-                curr_sum = int(i)
+            invalid = helper_two(str(i))
+            if invalid:
                 count += 1
-            else: curr_sum = 0
-            ans += curr_sum
-    return ans
+                ans += i
+    print(f"count: {count}")
+    return ans        
 
 def main():
     lines = read_input(AOC_CONFIG["input"])
