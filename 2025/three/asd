@@ -1,0 +1,32 @@
+2342342|3[4234278]
+
+max([2342])
+
+max([23])
+
+43423423427
+
+
+max digits 6
+dont pick from n-1
+
+341111|[1188]
+
+max(3,4,1,1,1)
+
+41
+
+
+max digit = 12
+8181819|1[1112111]
+
+888911112111
+
+
+1. cant pick from last n-1 for digit n
+(when picking digit 12 cant choose from the last 11)
+2. can only pick a digit AFTER your most recently picked digit (left to right
+   semantics of numbering)
+3. take the max of the bounds max([after_idx, n-1])
+4. append to result
+5. sliding window kinda but its modified
