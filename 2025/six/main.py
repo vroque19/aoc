@@ -1,0 +1,138 @@
+
+import enum
+from icecream import ic
+
+
+small = "small.txt"
+big = "large.txt"
+AOC_CONFIG = {
+    "part" : 2, # 0, 1,
+    "input": small
+}
+def read_input(file: str):
+    try:
+        with open(file, 'r') as f:
+            # Reads all lines and strips leading/trailing whitespace (including newlines)
+            data = [line for line in f.readlines()]
+        return data
+    except FileNotFoundError:
+        return None
+
+def get_operations(lines: str) -> list[str]:
+    return lines.split()
+def part_one(data: list[str]):
+    ops = get_operations(data[len(data)-1].strip())
+    print(ops)
+
+
+    data = [line.strip() for line in data]
+    expressions: list[str] = ["" for _ in range(len(ops))]
+    for i in range(len(data)-1):
+        nums = data[i].split()
+        for j in range(len(expressions)):
+            expressions[j] += nums[j]
+            expressions[j] += ops[j] if i < len(data)-2 else ""
+    sum = 0
+    for e in expressions:
+        sum += eval(e)
+    print(expressions)
+    return sum
+def part_two(data: list[str]):
+    ops = get_operations(data[len(data)-1].strip())
+    ops_len = len(ops)
+    cols = 3
+    rows = max([len(s) for s in data])
+    expressions: list[list[list[str]]] = []
+    for i in range(ops_len):
+        matrix: list[list[str]] = []
+        for _ in range(len(data) - 1):
+            row: list[str] = ["-1"] * cols
+            matrix.append(row)
+        expressions.append(matrix)
+
+    ic(ops)
+    intermediate_list: list[list[str]] = [[] for _ in range(len(data)-1)]
+    r = 0
+    for line in data[:len(data)-1]:
+        if(len(line)) < rows:
+            delta = rows - (len(line))
+            temp = line.removesuffix("\n")
+
+            temp += " "*delta
+            temp += "\n"
+            # print(f"old: {line}new: {temp}")
+            line = temp
+        prev = 0
+        # print("line", line)
+        curr = ""
+        for ptr, c in enumerate(line):
+            if c == " " or c =="\n":
+                # if the length of the curr num is length of num
+
+                if (ptr - prev) <= cols and ptr > cols:
+                    continue
+                if ptr < cols:
+                    continue
+                # print(f"ptr: {ptr}, prev: {prev}, c: {c}")
+                num = line[ptr-cols:ptr]
+                # print(num)
+                intermediate_list[r].append(num)
+                prev = ptr
+                continue
+            curr += c
+        r += 1
+
+    # add each num from intermediate_list to the 3D matrix row 0 to row
+    # len(data)-1
+    # print(data)
+    idx = 0
+    print("int list:",intermediate_list)
+    r = 0
+    for nums in intermediate_list:
+        m = 0
+        for num in nums:
+            for idx, c in enumerate(num):
+                if c != " ":
+                    expressions[m][r][idx] = c
+            # print(num)
+            m += 1
+        r += 1
+    sum : int = 0
+    ic(expressions)
+    for i, matrix in enumerate(expressions):
+        mat_expression = ""
+        for c in range(len(matrix[0])):
+            curr = ""
+            for r in range(len(matrix)):
+                curr += matrix[r][c] if matrix[r][c] != "-1" else ""
+            mat_expression += curr
+            if c < cols - 1:
+                mat_expression += ops[i]
+
+        # print(mat_expression)
+        ic(mat_expression)
+        sum += eval(mat_expression)
+        print(f"sum: {sum}")
+
+    return sum
+
+
+def main():
+    lines = read_input(str(AOC_CONFIG["input"]))
+    if lines is None:
+        print("error reading file")
+        return
+    if AOC_CONFIG["part"] == 0 or AOC_CONFIG["part"] == 1:
+        ans_one = part_one(lines)
+        print(f"Answer 2: {ans_one}")
+
+    if AOC_CONFIG["part"] == 0 or AOC_CONFIG["part"] == 2:
+        ans_two = part_two(lines)
+        print(f"Answer 2: {ans_two}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+
