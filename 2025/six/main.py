@@ -1,5 +1,6 @@
 
 import enum
+from turtle import width
 from icecream import ic
 
 
@@ -7,7 +8,7 @@ small = "small.txt"
 big = "large.txt"
 AOC_CONFIG = {
     "part" : 2, # 0, 1,
-    "input": small
+    "input": big
 }
 def read_input(file: str):
     try:
@@ -18,11 +19,21 @@ def read_input(file: str):
     except FileNotFoundError:
         return None
 
-def get_operations(lines: str) -> list[str]:
-    return lines.split()
+def get_operations(lines: str) -> tuple[list[int], list[str]]:
+    widths: list[int] = []
+    curr = 0
+    ic(lines)
+    for  i in range(1, len(lines)):
+        fast = i
+        if lines[fast] == " ":
+            curr += 1
+        else:
+            widths.append(curr)
+            curr = 0
+    return widths, lines.split()
+
 def part_one(data: list[str]):
-    ops = get_operations(data[len(data)-1].strip())
-    print(ops)
+    widths, ops = get_operations(data[len(data)-1].strip())
 
 
     data = [line.strip() for line in data]
@@ -37,20 +48,21 @@ def part_one(data: list[str]):
         sum += eval(e)
     print(expressions)
     return sum
+
 def part_two(data: list[str]):
-    ops = get_operations(data[len(data)-1].strip())
-    ops_len = len(ops)
-    cols = 3
+    widths, ops = get_operations(data[len(data)-1].strip())
+    ops_len = len(ops) - 1
+    ops = ops[:ops_len]
+    ic(widths, ops)
     rows = max([len(s) for s in data])
     expressions: list[list[list[str]]] = []
     for i in range(ops_len):
         matrix: list[list[str]] = []
         for _ in range(len(data) - 1):
-            row: list[str] = ["-1"] * cols
+            row: list[str] = ["-1"] * widths[i]
             matrix.append(row)
         expressions.append(matrix)
 
-    ic(ops)
     intermediate_list: list[list[str]] = [[] for _ in range(len(data)-1)]
     r = 0
     for line in data[:len(data)-1]:
@@ -60,21 +72,24 @@ def part_two(data: list[str]):
 
             temp += " "*delta
             temp += "\n"
-            # print(f"old: {line}new: {temp}")
             line = temp
         prev = 0
-        # print("line", line)
         curr = ""
+        w_idx = 0
         for ptr, c in enumerate(line):
+            if w_idx >= ops_len:
+                break
             if c == " " or c =="\n":
                 # if the length of the curr num is length of num
-
-                if (ptr - prev) <= cols and ptr > cols:
+                width = widths[w_idx]
+                if (ptr - prev) <= width and ptr > width:
                     continue
-                if ptr < cols:
+                if ptr < width:
                     continue
+                ic(width, w_idx)
+                w_idx += 1 # found a valid num, get next width
                 # print(f"ptr: {ptr}, prev: {prev}, c: {c}")
-                num = line[ptr-cols:ptr]
+                num = line[ptr-width:ptr]
                 # print(num)
                 intermediate_list[r].append(num)
                 prev = ptr
@@ -83,15 +98,14 @@ def part_two(data: list[str]):
         r += 1
 
     # add each num from intermediate_list to the 3D matrix row 0 to row
-    # len(data)-1
-    # print(data)
     idx = 0
-    print("int list:",intermediate_list)
     r = 0
+    ic(len(intermediate_list))
     for nums in intermediate_list:
         m = 0
         for num in nums:
             for idx, c in enumerate(num):
+                ic(m, r, c, idx)
                 if c != " ":
                     expressions[m][r][idx] = c
             # print(num)
@@ -106,7 +120,7 @@ def part_two(data: list[str]):
             for r in range(len(matrix)):
                 curr += matrix[r][c] if matrix[r][c] != "-1" else ""
             mat_expression += curr
-            if c < cols - 1:
+            if c < widths[i] - 1:
                 mat_expression += ops[i]
 
         # print(mat_expression)
