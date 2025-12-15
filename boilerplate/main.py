@@ -1,19 +1,19 @@
-from heapq import heappop, heappush, heapify
+from icecream import ic
 
 small = "small.txt"
 big = "large.txt"
 AOC_CONFIG = {
-    "part" : 2, # 0, 1,  
+    "part" : 2, # 0, 1,
     "input": big
 }
-def read_input(file):
+def read_input(file: str) -> list[str] | None:
     try:
         with open(file, 'r') as f:
             # Reads all lines and strips leading/trailing whitespace (including newlines)
             data = [line for line in f.readlines()]
         return data
     except FileNotFoundError:
-        print(f"Error: The file '{f}' was not found.")
+        print(f"Error: The file was not found.")
         return None
 
 def part_one(data: list[str]):
@@ -21,7 +21,7 @@ def part_one(data: list[str]):
 def part_two(data: list[str]):
     ...
 def main():
-    lines = read_input(AOC_CONFIG["input"])
+    lines = read_input(str(AOC_CONFIG["input"]))
     if lines is None:
         print("error reading file")
         return
