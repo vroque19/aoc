@@ -3,10 +3,10 @@ from icecream import ic
 small = "small.txt"
 big = "large.txt"
 AOC_CONFIG = {
-    "part" : 2, # 0, 1,
+    "part" : 1, # 0, 1,
     "input": big
 }
-def read_input(file: str) -> list[str] | None:
+def read_input(file) -> list[str] | None:
     try:
         with open(file, 'r') as f:
             # Reads all lines and strips leading/trailing whitespace (including newlines)
@@ -17,7 +17,21 @@ def read_input(file: str) -> list[str] | None:
         return None
 
 def part_one(data: list[str]):
-    ...
+    beams = set()
+    cnt = 0
+    for line in data:
+        ic(line)
+        for i in range(len(line)):
+            if line[i] == 'S':
+                beams.add(i)
+            if line[i] == '^':
+                if i in beams:
+                    cnt += 1
+                    beams.add(i-1)
+                    beams.add(i+1)
+                    beams.remove(i)
+    return cnt
+
 def part_two(data: list[str]):
     ...
 def main():

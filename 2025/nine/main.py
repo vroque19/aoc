@@ -41,6 +41,7 @@ def part_one(data: list[str]):
     max_area = 0
     best_pair = (0, 0)
     for pair in pairs:
+
         area = get_area(pair[0], pair[1])
         if area > max_area:
             max_area = area
@@ -48,8 +49,8 @@ def part_one(data: list[str]):
     print(best_pair, max_area)
     return max_area
 
-
 def part_two(data: list[str]): ...
+
 def main():
     lines = read_input(str(AOC_CONFIG["input"]))
     if lines is None:
